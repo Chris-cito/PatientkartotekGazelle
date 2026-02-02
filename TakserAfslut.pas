@@ -1804,7 +1804,8 @@ var
       try
         Res := 150;
         ffEksTil.Edit;
-        if IsCannabisProduct(MainDm.nxdb, ffEksLinLager.AsInteger, ffEksLinSubVareNr.AsString, ffEksLinTekst.AsString) then
+        if IsCannabisProduct(MainDm.nxdb, ffEksLinLager.AsInteger, ffEksLinSubVareNr.AsString, ffEksLinTekst.AsString,
+          ffEksLinDrugId.AsString) then
         begin
           ffEksTilSaldo.AsCurrency := CTRSaldoB - ffEksTilBGPBel.AsCurrency;
           CTRSaldoB := ffEksTilSaldo.AsCurrency
@@ -2096,7 +2097,8 @@ var
 
           if not ffEksLin.FindKey([AfslLbNr, Lin]) then
             continue;
-          if IsCannabisProduct(MainDm.nxdb, ffEksLinLager.AsInteger, ffEksLinSubVareNr.AsString, ffEksLinTekst.AsString) then
+          if IsCannabisProduct(MainDm.nxdb, ffEksLinLager.AsInteger, ffEksLinSubVareNr.AsString, ffEksLinTekst.AsString,
+            ffEksLinDrugId.AsString) then
           begin
             if FoundCTRB then
               continue;
@@ -5154,7 +5156,8 @@ begin
         if ffEksLinBrutto.AsCurrency = ffEksTilBGPBel.AsCurrency then
         begin
           // if cannabis product then always the patient part if not then skip
-          if IsCannabisProduct(nxdb, ffEksLinLager.AsInteger, ffEksLinSubVareNr.AsString) then
+          if IsCannabisProduct(nxdb, ffEksLinLager.AsInteger, ffEksLinSubVareNr.AsString, ffEksLinTekst.asstring,
+            ffEksLinDrugId.AsString) then
             line_amount := ffEksTilAndel.AsCurrency
           else
             continue;

@@ -505,7 +505,7 @@ begin
             continue;
 
           if IsCannabisProduct(MainDm.nxdb, ffEksLinLager.AsInteger,
-            ffEksLinSubVareNr.AsString, ffEksLinTekst.AsString) then
+            ffEksLinSubVareNr.AsString, ffEksLinTekst.AsString,ffEksLinDrugId.AsString) then
             continue;
 
           if ffEksLinSubVareNr.AsString ='100015' then
@@ -543,7 +543,7 @@ begin
             continue;
 
           if IsCannabisProduct(MainDm.nxdb, ffEksLinLager.AsInteger,
-            ffEksLinSubVareNr.AsString, ffEksLinTekst.AsString) then
+            ffEksLinSubVareNr.AsString, ffEksLinTekst.AsString,ffEksLinDrugId.AsString) then
             continue;
 
           if ffEksLinSubVareNr.AsString ='100015' then
@@ -595,7 +595,7 @@ begin
             continue;
 
           if not IsCannabisProduct(MainDm.nxdb, ffEksLinLager.AsInteger,
-            ffEksLinSubVareNr.AsString, ffEksLinTekst.AsString) then
+            ffEksLinSubVareNr.AsString, ffEksLinTekst.AsString,ffEksLinDrugId.AsString) then
             continue;
 
           if ffEksLinSubVareNr.AsString ='100015' then
@@ -633,7 +633,7 @@ begin
             continue;
 
           if not IsCannabisProduct(MainDm.nxdb, ffEksLinLager.AsInteger,
-            ffEksLinSubVareNr.AsString, ffEksLinTekst.AsString) then
+            ffEksLinSubVareNr.AsString, ffEksLinTekst.AsString,ffEksLinDrugId.AsString) then
             continue;
 
           if ffEksLinSubVareNr.AsString ='100015' then
@@ -799,7 +799,7 @@ begin
         if (CtrIndBel <> 0) or (ffEksLinSubVareNr.AsString ='100015') then
         begin
           if isCannabisProduct(MainDm.nxDB, ffEksLinLager.AsInteger,
-            ffEksLinSubVareNr.AsString, ffEksLinTekst.AsString) then
+            ffEksLinSubVareNr.AsString, ffEksLinTekst.AsString,ffEksLinDrugId.AsString) then
           begin
 
             // Første gang overskrift

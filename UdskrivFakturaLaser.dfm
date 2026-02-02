@@ -152,8 +152,8 @@ object fmFakturaLaser: TfmFakturaLaser
         Top = 100
         Width = 89
         Height = 24
-        Date = 39594.372139386600000000
-        Time = 39594.372139386600000000
+        Date = 39594.000000000000000000
+        Time = 0.372139386599883400
         TabOrder = 2
       end
       object DateTimePicker2: TDateTimePicker
@@ -161,8 +161,8 @@ object fmFakturaLaser: TfmFakturaLaser
         Top = 100
         Width = 89
         Height = 24
-        Date = 39594.372139386600000000
-        Time = 39594.372139386600000000
+        Date = 39594.000000000000000000
+        Time = 0.372139386599883400
         TabOrder = 3
       end
       object edtKundenr: TEdit

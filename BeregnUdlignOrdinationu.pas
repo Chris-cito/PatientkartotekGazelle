@@ -316,7 +316,7 @@ begin
     mtLinChkJrnlNr2.AsBoolean := FALSE;
 
    CannabisProduct := IsCannabisProduct(MainDm.nxdb, mtLinLager.AsInteger,
-      mtLinSubVareNr.AsString, mtLinTekst.AsString);
+      mtLinSubVareNr.AsString, mtLinTekst.AsString,ffEksLinDrugId.AsString);
 
   C2LogAdd('Egne bevillinger ordination start');
     // Egne bevillinger

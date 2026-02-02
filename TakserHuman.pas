@@ -4776,7 +4776,7 @@ var
     begin
       EditingVarenr := True;
       OldProductIsCannabis := IsCannabisProduct(MainDm.Nxdb,
-        MainDm.mtLinLager.AsInteger, MainDm.mtLinSubVareNr.AsString, MainDm.mtLinTekst.AsString);
+        MainDm.mtLinLager.AsInteger, MainDm.mtLinSubVareNr.AsString, MainDm.mtLinTekst.AsString,MainDm.mtLinDrugid.AsString);
 
     end
     else
@@ -6158,7 +6158,8 @@ begin
         // Spørg om beregning ønskes foretaget
         if ChkBoxYesNo('Beregn tilskud til fiktivt cprnr ?', True) then
         begin
-          if IsCannabisProduct(MainDm.Nxdb, MainDm.mtLinLager.AsInteger, MainDm.mtLinSubVareNr.AsString) then
+          if IsCannabisProduct(MainDm.Nxdb, MainDm.mtLinLager.AsInteger, MainDm.mtLinSubVareNr.AsString, MainDm.mtLinTekst.AsString,
+            MainDm.mtLinDrugid.AsString) then
             BeregnCannabisOrdination
           else
             BeregnOrdination(SaveDosisKortNr);
@@ -6166,7 +6167,8 @@ begin
       end
       else
       begin
-        if IsCannabisProduct(MainDm.Nxdb, MainDm.mtLinLager.AsInteger,  MainDm.mtLinSubVareNr.AsString) then
+        if IsCannabisProduct(MainDm.Nxdb, MainDm.mtLinLager.AsInteger,  MainDm.mtLinSubVareNr.AsString, MainDm.mtLinTekst.asstring,
+          MainDm.mtLinDrugid.AsString) then
           BeregnCannabisOrdination
         else
           BeregnOrdination(SaveDosisKortNr);

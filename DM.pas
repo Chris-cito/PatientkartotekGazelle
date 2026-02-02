@@ -3031,8 +3031,8 @@ uses
   uc2common.procs,
   uCTRClientMethods,
   uCtr2.Connection.Response, uCtr2.Connection.Types,
-  uctr2.Fault.Classes, uCtr2.Connection.Constants, uCTR2.CreateFictitiousPersonIdentifier.classes  uYesNo,
-  uC2LokalServiceClient.Procs;
+  uctr2.Fault.Classes, uCtr2.Connection.Constants, uCTR2.CreateFictitiousPersonIdentifier.classes,  uYesNo,
+  uC2Environment.Classes,  uC2LokalServiceClient.Procs;
 
 
 {$R *.DFM}
@@ -5741,7 +5741,6 @@ var
   ISOCountryCode : string;
   LBirthdate : string;
   LFault : tfault;
-  LDetails : tfault.Details;
 const
   SBadDate = 'Fejl i fødselsdato';
 begin
@@ -5810,7 +5809,7 @@ begin
       LFault := TFault.ParseXml(Lresponse);
       try
         C2LogAddF('Fault : %s %s',[LFault.FaultCode, LFault.FaultString]);
-        for LDetails in lfault.Details do
+        for var LDetails in lfault.Details do
         begin
             C2LogAddF('Details %s - %s',[LDetails.Key, LDetails.Value]);
         end;
