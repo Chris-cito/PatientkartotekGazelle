@@ -96,7 +96,7 @@ uses
 
   uC2DMVSSvrConnection.Classes, CtrTilskudsSatser, uEkspeditioner.Tables,
   uc2bruger.Classes, uc2afdeling.Classes,uC2FMK.Prescription.Classes,uC2FMK,
-  uc2llog.types,uLagerKartotek.Tables,uC2FMK.Common.Types,
+  uc2llog.types,uLagerKartotek.Tables,uC2FMK.Common.Types, uEkspLeveringsListe.Tables,
   uC2FMK.DoseDispensingCard.Classes,
   uRS_Ekspeditioner.Tables,
   uc2bruger.logon.Procs,uC2Bruger.Types,
@@ -2900,7 +2900,6 @@ type
     function GetBrugerNr: integer;
     procedure SetBrugerNr(const Value: integer);
     function CreatePatientkartotekRecordFromRS_Ekspeditioner(AReceptid: integer): Boolean;
-    function IsCTR2Enabled: Boolean;
     function CTR2GetFiktivId(ALandekode: integer; out ACtrFiktivId: string): Boolean;
     function GetAsylnCpr(ALevInfo: string; out AASylnCPR: string): Boolean;
     function Amt2Region(Amt: word): word;
@@ -3005,6 +3004,8 @@ type
     property CheckInteraktion: boolean read FCheckInteraktion write FCheckInteraktion;
     property C2UserName: string read FC2UserName write FC2UserName;
     property EorderPriceWithinLimits: Integer read FEorderPriceWithinLimits write FEorderPriceWithinLimits;
+    function IsCTR2Enabled: Boolean;
+    procedure DeleteLbnrFromEkspLeveringsListe(ALbnr: integer);
   end;
 
 var
@@ -6269,6 +6270,31 @@ begin
       Result := 81;
   else
     Result := Amt;
+  end;
+
+end;
+
+procedure TMainDm.DeleteLbnrFromEkspLeveringsListe(ALbnr: integer);
+var
+  LQuery: TnxQuery;
+begin
+  LQuery := TnxQuery.Create(nil);
+  try
+    try
+      LQuery.Database := nxdb;
+      LQuery.SQL.Text := 'delete from ' + tnEkspLeveringsListe + ' where ' + fnEkspLeveringsListeLbNr_P;
+      LQuery.ParamByName(fnEkspLeveringsListeLbNr).AsInteger := ALbnr;
+      LQuery.ExecSQL;
+      C2LogAdd('DeleteLbnrFromEkspLeveringsListe : Number of Records deleted ' + LQuery.RowsAffected.ToString);
+      LQuery.Close;
+
+    except
+      on E: Exception do
+        C2LogAdd('Fejl i DeleteLbnrFromEkspLeveringsListe ' + E.Message);
+    end;
+
+  finally
+    LQuery.Free;
   end;
 
 end;

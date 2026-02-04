@@ -67,7 +67,7 @@ object StamForm: TStamForm
     ShowHint = True
     TabOrder = 0
     TabStop = False
-    Properties.ActivePage = tsEHandel
+    Properties.ActivePage = EkspPage
     Properties.CustomButtons.Buttons = <>
     Properties.TabHeight = 25
     OnEnter = StamPagesEnter
@@ -86,10 +86,6 @@ object StamForm: TStamForm
       ParentFont = False
       OnEnter = KartotekPageEnter
       OnExit = KartotekPageExit
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object KartEditPanel: TPanel
         Left = 0
         Top = 0
@@ -1545,10 +1541,6 @@ object StamForm: TStamForm
       Caption = 'Tilskud [CF2]'
       OnEnter = TilskudsPageEnter
       OnExit = TilskudsPageExit
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object TilskEditPanel: TPanel
         Left = 0
         Top = 0
@@ -1606,8 +1598,6 @@ object StamForm: TStamForm
             ParentFont = False
             PopupMenu = TilMenu
             TabOrder = 5
-            ExplicitWidth = 473
-            ExplicitHeight = 243
           end
           object gbRegel: TGroupBox
             Left = 7
@@ -1725,8 +1715,8 @@ object StamForm: TStamForm
               TabOrder = 0
             end
             object TilFraDato: TDBEdit
-              Left = 70
-              Top = 87
+              Left = 72
+              Top = 89
               Width = 68
               Height = 21
               Hint = 'Bevillings startdato'
@@ -2008,10 +1998,6 @@ object StamForm: TStamForm
       ParentFont = False
       OnEnter = EkspPageEnter
       OnExit = EkspPageExit
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object dbgrEksp: TDBGrid
         Left = 0
         Top = 0
@@ -2203,8 +2189,6 @@ object StamForm: TStamForm
         BevelOuter = bvNone
         TabOrder = 2
         OnResize = Panel5Resize
-        ExplicitTop = 219
-        ExplicitWidth = 804
         object dbgrLinier: TDBGrid
           Left = 0
           Top = 0
@@ -2228,7 +2212,7 @@ object StamForm: TStamForm
           OnDrawColumnCell = dbgrLinierDrawColumnCell
         end
         object dbgrTilskud: TDBGrid
-          Left = 342
+          Left = 334
           Top = 0
           Width = 462
           Height = 173
@@ -2256,10 +2240,6 @@ object StamForm: TStamForm
       ImageIndex = 3
       OnEnter = UafslutPageEnter
       OnExit = UafslutPageExit
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object dbgrUafsl: TDBGrid
         Left = 0
         Top = 0
@@ -2362,7 +2342,6 @@ object StamForm: TStamForm
           Caption = '&Udskriv'
           NumGlyphs = 2
           TabOrder = 7
-          ExplicitLeft = 724
         end
         object eUafKoNr: TEdit
           Left = 269
@@ -2409,7 +2388,6 @@ object StamForm: TStamForm
           Caption = 'Udsk. &pakke'
           NumGlyphs = 2
           TabOrder = 6
-          ExplicitLeft = 633
         end
         object edtLevnr: TEdit
           Left = 474
@@ -2456,10 +2434,6 @@ object StamForm: TStamForm
       Caption = 'FMK Recepter [CF5]'
       ImageIndex = 5
       OnShow = RSRemotePageShow
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object gbCpr: TGroupBox
         Left = 0
         Top = 0
@@ -2936,10 +2910,6 @@ object StamForm: TStamForm
       Caption = 'Lokale Recepter [CF6]'
       ImageIndex = 6
       OnShow = RSLocalPageShow
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object GroupBox2: TGroupBox
         Left = 0
         Top = 0
@@ -3125,7 +3095,6 @@ object StamForm: TStamForm
           ParentFont = False
           TabOrder = 1
           OnClick = butFilterClick
-          ExplicitLeft = 698
         end
         object dtpDatoFra: TDateTimePicker
           Left = 8
@@ -3133,8 +3102,8 @@ object StamForm: TStamForm
           Width = 90
           Height = 24
           Hint = 'Startdato p'#229' receptoversigt'
-          Date = 39006.676472615700000000
-          Time = 39006.676472615700000000
+          Date = 39006.000000000000000000
+          Time = 0.676472615698003200
           TabOrder = 7
         end
         object dtpDatoTil: TDateTimePicker
@@ -3143,8 +3112,8 @@ object StamForm: TStamForm
           Width = 90
           Height = 24
           Hint = 'Slutdato p'#229' receptoversigt'
-          Date = 39006.676472615700000000
-          Time = 39006.676472615700000000
+          Date = 39006.000000000000000000
+          Time = 0.676472615698003200
           TabOrder = 9
         end
         object edtCPRNr1: TEdit
@@ -3231,9 +3200,9 @@ object StamForm: TStamForm
           Top = 80
           Width = 63
           Height = 24
-          Date = 40147.327171759300000000
+          Date = 40147.000000000000000000
           Format = 'HH:mm'
-          Time = 40147.327171759300000000
+          Time = 0.327171759301563700
           Kind = dtkTime
           TabOrder = 8
         end
@@ -3242,9 +3211,9 @@ object StamForm: TStamForm
           Top = 80
           Width = 63
           Height = 24
-          Date = 40147.327171759300000000
+          Date = 40147.000000000000000000
           Format = 'HH:mm'
-          Time = 40147.327171759300000000
+          Time = 0.327171759301563700
           Kind = dtkTime
           TabOrder = 10
         end
@@ -3307,8 +3276,6 @@ object StamForm: TStamForm
         Height = 41
         Align = alBottom
         TabOrder = 3
-        ExplicitTop = 391
-        ExplicitWidth = 804
         object Label55: TLabel
           Left = 166
           Top = 13
@@ -3441,10 +3408,6 @@ object StamForm: TStamForm
       ImageIndex = 6
       OnEnter = FakturaPageEnter
       OnExit = FakturaPageExit
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object dbgrFors: TDBGrid
         Left = 0
         Top = 0
@@ -3641,7 +3604,6 @@ object StamForm: TStamForm
           NumGlyphs = 2
           TabOrder = 3
           OnClick = butRetPakkeClick
-          ExplicitLeft = 472
         end
         object BitBtn3: TBitBtn
           Left = 315
@@ -3686,7 +3648,6 @@ object StamForm: TStamForm
           DropDownMenu = PopupUdMenu
           Kind = cxbkOfficeDropDown
           TabOrder = 4
-          ExplicitLeft = 578
         end
         object cxBtnDMVS: TcxButton
           Left = 669
@@ -3698,7 +3659,6 @@ object StamForm: TStamForm
           DropDownMenu = DMVSMenu
           Kind = cxbkOfficeDropDown
           TabOrder = 5
-          ExplicitLeft = 677
         end
       end
     end
@@ -3789,8 +3749,8 @@ object StamForm: TStamForm
             Top = 44
             Width = 91
             Height = 24
-            Date = 41555.548351099540000000
-            Time = 41555.548351099540000000
+            Date = 41555.000000000000000000
+            Time = 0.548351099540013800
             TabOrder = 2
           end
           object dtpEhSlut: TDateTimePicker
@@ -3798,8 +3758,8 @@ object StamForm: TStamForm
             Top = 46
             Width = 91
             Height = 21
-            Date = 41555.548538784720000000
-            Time = 41555.548538784720000000
+            Date = 41555.000000000000000000
+            Time = 0.548538784722040900
             TabOrder = 3
           end
         end
@@ -3915,6 +3875,7 @@ object StamForm: TStamForm
             item
               Expanded = False
               FieldName = 'Antal'
+              Width = 64
               Visible = True
             end
             item
@@ -4768,7 +4729,6 @@ object StamForm: TStamForm
     Top = 192
   end
   object IdHTTP1: TIdHTTP
-    AllowCookies = True
     ProxyParams.BasicAuthentication = False
     ProxyParams.ProxyPort = 0
     Request.ContentLength = -1

@@ -1149,7 +1149,10 @@ uses
   frmUndo in 'frmUndo.pas' {fmUndo},
   LaserFormularer in '..\..\XE7\Apotek\Common\LaserFormularer.pas' {dmFormularer: TDataModule},
   EmailFakturau in '..\..\XE7\Apotek\Common\EmailFakturau.pas' {frmEmailFaktura},
-  frmMidCli in '..\..\XE7\Apotek\Common\frmMidCli.pas' {MidCli};
+  frmMidCli in '..\..\XE7\Apotek\Common\frmMidCli.pas' {MidCli},
+  ucf3.procs in 'ucf3.procs.pas',
+  uGemRegel42Returnering.procs in 'uGemRegel42Returnering.procs.pas',
+  uGemRegel42Returnering.types in 'uGemRegel42Returnering.types.pas';
 
 {$R *.RES}
 

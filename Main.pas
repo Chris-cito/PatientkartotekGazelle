@@ -1124,7 +1124,7 @@ type
     procedure WMGetDosisPak(var Msg: TMessage); message WM_GetDosisPak;
     procedure WMSkiftBruger(var Msg: TMessage); message WM_SkiftBruger;
     procedure WndProc(var Message: TMessage); override;
-    procedure GetCTR(AKundeNr: string);
+    function GetCTR(const AKundeNr: string) : Boolean;
     procedure StartBatch;
     procedure CheckBatch;
     procedure CheckBatchLogon;
@@ -1348,7 +1348,7 @@ uses
   SendSMS, TakserDosis, frmDosis, PatMatrixPrinter,
   SMSDMu, C2Qtnsu, RSEkspFejlu, frmHenstandsOrdning, uCTRUdskriv, uEkspUdsriv,
   uRS_EkspLinier.Tables,uEHOrdreLinier.tables, uehordreHeader.tables,
-  uc2Common.procs, uUdlevDMVSLevliste,frmC2CtrCountryList; // TakserDosis;
+  uc2Common.procs, uUdlevDMVSLevliste,frmC2CtrCountryList, ucf3.procs; // TakserDosis;
 
 {$R *.DFM}
 
@@ -2680,6 +2680,8 @@ begin
         exit;
       if EKundeType.ItemIndex = 18 then
         ffPatKarKundeType.AsInteger := 1;
+      if MainDm.ffPatKarLandekode.AsInteger >= 999 then
+        MainDm.ffPatKarEjCtrReg.AsBoolean := True;
 
       case ffPatKar.State of
         dsEdit:
@@ -3728,6 +3730,14 @@ begin
       exit;
     end;
 
+    if DateOf(MainDm.ffPatTilTilDato.AsDateTime) < DateOf(MainDm.ffPatTilFraDato.AsDateTime)then
+    begin
+      ChkBoxOK('Fejl i tildato');
+      TilTilDato.SetFocus;
+      exit;
+
+    end;
+
     CheckDosis(ffPatKarKundeNr.AsString);
     try
       ffPatTilAtcKode.AsString := caps(ffPatTilAtcKode.AsString);
@@ -3855,7 +3865,7 @@ begin
 
   if (Sender is TDBLookupComboBox) then
   begin
-    dbl := (Sender as TDBLookupComboBox);
+    dbl := TDBLookupComboBox(Sender);
     dbl.DropDownRows := dbl.ListSource.dataset.RecordCount;
     if dbl = ECtrLand then
       dbl.DropDownRows := 7;
@@ -3863,7 +3873,7 @@ begin
   end;
   if (Sender is TDBComboBox) then
   begin
-    dbc := (Sender as TDBComboBox);
+    dbc := TDBComboBox(Sender);
     dbc.DropDownCount := dbc.Items.Count;
   end;
 
@@ -4840,7 +4850,8 @@ begin
       if EBem.Lines.Count > 0 then
         ChkBoxOK('Der er bemærkninger på patienten!' + sLineBreak +
           EBem.Lines.Text);
-      GetCTR(EKundeNr.Text);
+      if not GetCTR(EKundeNr.Text) then
+        Exit;
       SidKundeNr := ffPatKarKundeNr.AsString;
       c2logadd('6: sidkundenr ' + SidKundeNr);
       EkspHuman(ffEksOvrLbNr.Value, NIL);
@@ -5285,7 +5296,8 @@ begin
 
             if ffDebKarMomsType.AsInteger = 0 then
             begin
-              GetCTR(ffPatKarKundeNr.AsString);
+              if not GetCTR(ffPatKarKundeNr.AsString) then
+                Exit;
 
               SidKundeNr := ffPatKarKundeNr.AsString;
               c2logadd('7: sidkundenr ' + SidKundeNr);
@@ -5314,7 +5326,9 @@ begin
               end
               else
               begin
-                GetCTR(ffPatKarKundeNr.AsString);
+
+                if not GetCTR(ffPatKarKundeNr.AsString) then
+                  Exit;
 
                 SidKundeNr := ffPatKarKundeNr.AsString;
                 c2logadd('7: sidkundenr ' + SidKundeNr);
@@ -5326,7 +5340,8 @@ begin
           end
           else
           begin
-            GetCTR(ffPatKarKundeNr.AsString);
+            if not GetCTR(ffPatKarKundeNr.AsString) then
+              Exit;
             SidKundeNr := ffPatKarKundeNr.AsString;
             c2logadd('8: sidkundenr ' + SidKundeNr);
             EkspHuman(0, NIL);
@@ -5364,7 +5379,8 @@ begin
           end
           else
           begin
-            GetCTR(ffPatKarKundeNr.AsString);
+            if not GetCTR(ffPatKarKundeNr.AsString) then
+              Exit;
             SidKundeNr := ffPatKarKundeNr.AsString;
             c2logadd('10: sidkundenr ' + SidKundeNr);
             EkspHuman(0, NIL);
@@ -5380,7 +5396,8 @@ begin
         end
         else
         begin
-          GetCTR(ffPatKarKundeNr.AsString);
+          if not GetCTR(ffPatKarKundeNr.AsString) then
+            Exit;
           c2logadd('12: sidkundenr ' + SidKundeNr);
           EkspHuman(0, NIL);
         end;
@@ -5863,7 +5880,8 @@ begin
             if EBem.Lines.Count > 0 then
               ChkBoxOK('Der er bemærkninger på patienten!' + sLineBreak + EBem.Lines.Text);
             // Kald taksering
-            GetCTR(ffPatKarKundeNr.AsString);
+            if not GetCTR(ffPatKarKundeNr.AsString) then
+              Exit;
             SidKundeNr := ffPatKarKundeNr.AsString;
             c2logadd('13: sidkundenr ' + SidKundeNr);
             // CheckRSOrdinations;
@@ -5875,7 +5893,8 @@ begin
           // Stop hvis bemærkning
           if EBem.Lines.Count > 0 then
             ChkBoxOK('Der er bemærkninger på patienten!' + sLineBreak + EBem.Lines.Text);
-          GetCTR(ffPatKarKundeNr.AsString);
+          if not GetCTR(ffPatKarKundeNr.AsString) then
+            Exit;
           // Kald taksering
           SidKundeNr := ffPatKarKundeNr.AsString;
           c2logadd('14: sidkundenr ' + SidKundeNr);
@@ -5970,7 +5989,8 @@ begin
         end;
         ffPatKarEjCtrReg.AsBoolean := AsylnSoeger;
         ffPatKar.Post;
-        GetCTR(ffPatKarKundeNr.AsString);
+        if not GetCTR(ffPatKarKundeNr.AsString) then
+          Exit;
         EdiTxt := '';
         if EdiRcp.Tilskud <> '' then
           EdiTxt := EdiTxt + sLineBreak + '  ' + EdiRcp.Tilskud;
@@ -6571,7 +6591,8 @@ begin
       if ffPatKar.FindKey([EdiRcp.PaCprNr]) then
       begin
         // Stop hvis bemærkning
-        GetCTR(ffPatKarKundeNr.AsString);
+        if not GetCTR(ffPatKarKundeNr.AsString) then
+          Exit;
         if not DosisAutoStopIkkeVedBemaerkning then
           if EBem.Lines.Count > 0 then
             ChkBoxOK('Der er bemærkninger på patienten!' + #10#13 +
@@ -8597,7 +8618,8 @@ begin
         if not ffPatKar.FindKey([AKundenr]) then
           LSetInProgress := False;
 
-        GetCTR(AKundenr);
+        if not GetCTR(AKundenr) then
+          Exit;
         LKundenr := AKundenr;
       end
       else
@@ -8606,7 +8628,8 @@ begin
         if not ffPatKar.FindKey([nxRSEkspPatCPR.AsString]) then
           LSetInProgress := False;
 
-        GetCTR(nxRSEkspPatCPR.AsString);
+        if not GetCTR(nxRSEkspPatCPR.AsString) then
+          Exit;
         LKundenr := nxRSEkspPatCPR.AsString;
       end;
       // store thr kundenr for the ctrl-k buffer
@@ -12599,42 +12622,70 @@ begin
 
 end;
 
-procedure TStamForm.GetCTR(AKundeNr: string);
+function TStamForm.GetCTR(const AKundeNr: string) : Boolean;
 const
-  SFileName = 'C2GetCtr.exe';
+  SCTR1Name = 'C2GetCtr.exe';
+  SCTR2Name = 'C2GetCtr2.exe';
 var
   LCTRprogstring: string;
+  LCTRProgramName : string;
 begin
-  with MainDm do
+  Result := True;
+  LCTRprogstring := '';
+  MainDm.C2GetCTRJobid := 0;
+  if not MainDm.ffPatUpd.FindKey([AKundeNr]) then
+    exit;
+  if MainDm.ffPatUpdKundeType.AsInteger <> 1 then
+    exit;
+  if TFMKPersonIdentifierSource.DetectSource(AKundeNr,pisUndefined) <> pisCPR then
+    exit;
+
+  if MainDm.IsCTR2Enabled then
   begin
-    LCTRprogstring := '';
-    C2GetCTRJobid := 0;
-    if not ffPatUpd.FindKey([AKundeNr]) then
-      exit;
-    if ffPatUpdKundeType.AsInteger <> 1 then
-      exit;
-
-    c2logadd('Starting C2GetCtr');
-    if FileExists(ProgramFolder + SFileName) then
-      LCTRprogstring := ProgramFolder + SFileName + ' ' + trim(AKundeNr)
-    else
+    LCTRProgramName := SCTR2Name;
+    if (maindm.BrugerNr <> 99) and (not maindm.Bruger.HasValidSosiIdOnServer) then
     begin
-      if FileExists('G:\' + SFileName) then
-        LCTRprogstring := 'G:\' + SFileName + ' ' + trim(AKundeNr);
+      // message about user not being logged in
+      TaskMessageDlg('Bemærk',PWideChar('CTR2 : Bruger skal være logget ind med MitID'),TMsgDlgType.mtInformation,
+        [TMsgDlgBtn.mbOK],0);
+      Exit(True);
     end;
 
-    // if LCTRProgrstring is blank then C2GetCtr.exe does not exist in the 2 places we have looked
-    if LCTRprogstring = '' then
-    begin
-      c2logadd(SFileName + ' not found');
-      exit;
-    end;
 
-    if ExecuteJob(LCTRprogstring, SW_HIDE, C2GetCTRJobid) <> 0 then
-      c2logadd('Fejl i start C2GetCtr');
+  end
+  else
+    LCTRProgramName := SCTR1Name;
 
-    c2logadd('After execute job ' + LCTRprogstring);
+
+
+  c2logadd('Starting C2GetCtr');
+  if FileExists(ProgramFolder + LCTRProgramName) then
+    LCTRprogstring := ProgramFolder + LCTRProgramName
+  else
+  begin
+    if FileExists('G:\' + LCTRProgramName) then
+      LCTRprogstring := 'G:\' + LCTRProgramName;
   end;
+
+  // if LCTRProgrstring is blank then C2GetCtr.exe does not exist in the 2 places we have looked
+  if LCTRprogstring = '' then
+  begin
+    c2logadd(LCTRProgramName + ' not found');
+    exit;
+  end;
+  var LBrugerNr := maindm.BrugerNr;
+  if LBrugerNr = 99 then
+    LBrugerNr := 0;
+  if LCTRProgramName = SCTR2Name then
+    LCTRprogstring := LCTRprogstring + Format(' /AfdelingsNr:%d /Bruger:%d /Kundenr:%s',
+      [MainDm.AfdNr, LBrugerNr, Trim(AKundeNr)])
+  else
+    LCTRprogstring := LCTRprogstring + ' ' + Trim(AKundeNr);
+
+  if ExecuteJob(LCTRprogstring, SW_HIDE, MainDm.C2GetCTRJobid) <> 0 then
+    c2logadd('Fejl i start C2GetCtr');
+
+  c2logadd('After execute job ' + LCTRprogstring);
 end;
 
 function TStamForm.HTTPSendEordre(xmlstr: WideString): Boolean;
@@ -12777,10 +12828,24 @@ begin
 end;
 
 procedure TStamForm.acVisCTRBevExecute(Sender: TObject);
+var
+  ExitCode: DWord;
 begin
   inherited;
   GetCTR(MainDm.ffPatKarKundeNr.AsString);
-  TfmCtrBevOversigt.CtrBevOver;
+  if MainDm.C2GetCTRJobid <> 0 then
+  begin
+    for var i := 1 to 50 do
+    begin
+      GetExitCodeProcess(MainDm.C2GetCTRJobid, ExitCode);
+      if ExitCode <> STILL_ACTIVE then
+        break;
+      Sleep(100);
+    end;
+    MainDm.C2GetCTRJobid := 0;
+    C2LogAddF('C2GetCtr %d', [ExitCode]);
+  end;
+  TfmCtrBevOversigt.CtrBevOver(MainDm.ffPatKarKundeNr.AsString);
 end;
 
 procedure TStamForm.acVisDDKortExecute(Sender: TObject);
@@ -13650,341 +13715,30 @@ end;
 procedure TStamForm.AcCF3UdEkspListeExecute(Sender: TObject);
 var
   FraDato, TilDato: TDateTime;
-  PNr: Word;
-  Syg, Kom, Pat: Currency;
-  Antal, Patient, TilAmt, TilKom, VareNr, VareNavn, YderNavn, LbNr,
-    Dato: String;
-  PatLst: TStringList;
-  TotalSyg, TotalKom, TotalPat: Currency;
-  gebyr: Currency;
-  prnstring: string;
-  DetailedList : boolean;
+  DetailedList: Boolean;
 
-  procedure DetailedKundeList;
-  var
-    eksplist: Tlist<Integer>;
-    printlist: Tlist<Integer>;
-    ilbnr: Integer;
-    credlbnr: Integer;
-    credlinlbnr: Integer;
-    save_index: string;
-  begin
-    with MainDm do
-    begin
-      eksplist := Tlist<Integer>.Create;
-      printlist := Tlist<Integer>.Create;
-      save_index := SaveAndAdjustIndexName(ffRetEks, 'NrOrden');
-      try
-        ffAfrEks.IndexName := 'KundeNrOrden';
-        ffAfrEks.SetRange([ffPatKarKundeNr.AsString], [ffPatKarKundeNr.AsString]);
-        try
-          if ffAfrEks.RecordCount = 0 then
-            exit;
-          ffAfrEks.First;
-          while not ffAfrEks.Eof do
-          begin
-            try
-              if ffAfrEksOrdreType.AsInteger = 2 then
-                Continue;
-              if ffAfrEksTakserDato.AsDateTime < FraDato then
-                Continue;
-              if ffAfrEksTakserDato.AsDateTime > TilDato then
-                Continue;
-              eksplist.add(ffAfrEksLbNr.AsInteger);
-            finally
-              ffAfrEks.Next;
-            end;
-          end;
-        finally
-          ffAfrEks.CancelRange;
-        end;
-        eksplist.Sort;
-        C2LogAddF('eksplist count is %d',[eksplist.Count]);
-        ffAfrEks.IndexName := 'NrOrden';
-        for ilbnr in eksplist do
-        begin
-          if printlist.Contains(ilbnr) then
-            Continue;
-          if not ffAfrEks.FindKey([ilbnr]) then
-            Continue;
-          credlbnr := ffAfrEksUdlignNr.AsInteger;
-          ffAfrLin.Last;
-          nxEksCred.IndexName := 'LbnrOrden';
-          while not ffAfrLin.Bof do
-          begin
-            nxEksCred.SetRange([ilbnr, ffafrlinlinienr.AsInteger],
-              [ilbnr, ffafrlinlinienr.AsInteger]);
-            try
-              if nxEksCred.RecordCount = 0 then
-              begin
-                if printlist.Contains(ilbnr) then
-                  prnstring := '        '
-                else
-                begin
-                  prnstring := format('%-8.d', [ilbnr]);
-                  printlist.add(ilbnr);
-                end;
-
-                if credlbnr <> 0 then
-                begin
-                  prnstring := prnstring + ' ' + format('%-8.d', [credlbnr]);
-                  if not printlist.Contains(credlbnr) then
-                    printlist.add(credlbnr);
-                end
-                else
-                  prnstring := prnstring + '         ';
-                prnstring := prnstring + ' ' + ffAfrLinSubVareNr.AsString;
-                prnstring := prnstring + ' ' + format('%-20s', [copy(ffAfrLinTekst.AsString, 1, 20)]);
-                prnstring := prnstring + ' ' + format('%-5.d', [ffAfrLinAntal.AsInteger]);
-                if credlbnr <> 0 then
-                begin
-                  prnstring := prnstring + ' ' +
-                    format('%-5.d', [ffAfrLinAntal.AsInteger]);
-                  if ffRetEks.FindKey([credlbnr]) then
-                    prnstring := prnstring + ' ' + FormatDateTime('dd-mm-yy', ffRetEks.fieldbyname('Takserdato').AsDateTime);
-
-                  if ffAfrEksOrdreStatus.AsInteger = 1 then
-                    prnstring := prnstring + ' Åben'
-                  else
-                    prnstring := prnstring + ' Afsluttet';
-                end
-                else
-                begin
-                  prnstring := prnstring + ' ' + format('%-5s', ['']);
-                  prnstring := prnstring + ' ' + format('%-8s', ['']);
-
-                  if ffAfrEksOrdreStatus.AsInteger = 1 then
-                    prnstring := prnstring + ' Åben'
-                  else
-                    prnstring := prnstring + ' Afsluttet';
-
-                end;
-                PatLst.add(prnstring);
-              end
-              else
-              begin
-                nxEksCred.First;
-                while not nxEksCred.Eof do
-                begin
-                  if printlist.Contains(ilbnr) then
-                    prnstring := '        '
-                  else
-                  begin
-                    prnstring := format('%-8.d', [ilbnr]);
-                    printlist.add(ilbnr);
-                  end;
-                  credlinlbnr := nxEksCred.fieldbyname('CreditLbnr').AsInteger;
-                  prnstring := prnstring + ' ' + format('%-8.d', [credlinlbnr]);
-                  if not printlist.Contains(credlinlbnr) then
-                    printlist.add(credlinlbnr);
-                  prnstring := prnstring + ' ' + ffAfrLinSubVareNr.AsString;
-                  prnstring := prnstring + ' ' + format('%-20s', [copy(ffAfrLinTekst.AsString, 1, 20)]);
-                  prnstring := prnstring + ' ' + format('%-5.d', [ffAfrLinAntal.AsInteger]);
-                  if nxEksCred.fieldbyname('DelvisAntal').AsInteger <> 0 then
-                    prnstring := prnstring + ' ' + format('%-5.d', [nxEksCred.fieldbyname('DelvisAntal').AsInteger])
-                  else
-                    prnstring := prnstring + ' ' + format('%-5.d', [ffAfrLinAntal.AsInteger]);
-                  if nxEksCred.fieldbyname('DelvisDato').AsString = '' then
-                    prnstring := prnstring + ' ' + format('%-8s', [''])
-                  else
-                    prnstring := prnstring + ' ' + FormatDateTime('dd-mm-yy', nxEksCred.fieldbyname('DelvisDato').AsDateTime);
-
-                  if ffAfrEksOrdreStatus.AsInteger = 1 then
-                    prnstring := prnstring + ' Åben'
-                  else
-                    prnstring := prnstring + ' Afsluttet';
-                  PatLst.add(prnstring);
-                  nxEksCred.Next;
-                end;
-
-              end;
-
-            finally
-              nxEksCred.CancelRange;
-            end;
-
-            ffAfrLin.Prior;
-
-          end;
-          PatLst.add('');
-
-        end;
-        PatLst.Insert(0, 'løbenr   løbenr                               pak   kred  retur            ');
-        PatLst.Insert(0, 'Eksp     Retur    Varenr Varenavn             Ant   Ant   Dato for Status  ');
-        PatLst.Insert(0, 'Udskrevet for ' + ffPatKarKundeNr.AsString + ' ' + BytNavn(ffPatKarNavn.AsString));
-        PatLst.Insert(0, ffFirmaNavn.AsString);
-        PatLst.Insert(0, 'E K S P E D I T I O N S - L I S T E');
-        PatLst.SaveToFile('C:\C2\Temp\EkspListe.Txt');
-        PatMatrixPrnForm.PrintMatrix(PNr, 'C:\C2\Temp\EkspListe.Txt');
-      finally
-        eksplist.Free;
-        printlist.Free;
-        ffRetEks.IndexName := save_index;
-      end;
-
-    end;
-  end;
 
 begin
-  with MainDm do
-  begin
-    TotalSyg := 0;
-    TotalKom := 0;
-    TotalPat := 0;
+  FraDato := FirstDayDate(Date);
+  TilDato := LastDayDate(Date);
+  if not TfrmEkspUdskriv.ShowForm(FraDato, TilDato, DetailedList) then
+    exit;
 
-    FraDato := FirstDayDate(Date);
-    TilDato := LastDayDate(Date);
-    if not TfrmEkspUdskriv.ShowForm(FraDato,TilDato,DetailedList) then
-      exit;
+  BusyMouseBegin;
+  try
 
-
-    BusyMouseBegin;
-    PNr := 0;
-    FraDato := Trunc(FraDato);
-    TilDato := Trunc(TilDato) + C2MaxTime;
-    PatLst := TStringList.Create;
     try
-
       if DetailedList then
-      begin
-        try
-          DetailedKundeList;
-        except
-          on e: Exception do
-            ChkBoxOK(e.Message);
-        end;
-        exit;
-      end;
-      ffAfrEks.IndexName := 'KundeNrOrden';
-      ffAfrEks.SetRange([ffPatKarKundeNr.AsString], [ffPatKarKundeNr.AsString]);
-      ffAfrEks.First;
-      while not ffAfrEks.Eof do
-      begin
-        try
-          if ffAfrEksOrdreStatus.Value <> 2 then
-            Continue;
-          if ffAfrEksAfsluttetDato.AsDateTime < FraDato then
-            Continue;
-          if ffAfrEksAfsluttetDato.AsDateTime > TilDato then
-            Continue;
-
-          LbNr := format('%8d', [ffAfrEksLbNr.Value]);
-          LbNr := LbNr + ' ';
-          Dato := FormatDateTime('ddmmyy', ffAfrEksAfsluttetDato.AsDateTime);
-          YderNavn := Trim(ffAfrEksYderNavn.AsString);
-          ffAfrLin.Last;
-          while not ffAfrLin.Bof do
-          begin
-            Syg := Abs(ffAfrTilTilskSyg.AsCurrency);
-            Kom := Abs(ffAfrTilTilskKom1.AsCurrency) +
-              Abs(ffAfrTilTilskKom2.AsCurrency);
-            Pat := Abs(ffAfrTilAndel.AsCurrency);
-            if ffAfrTilUdligning.AsCurrency <> 0 then
-              Syg := -Pat;
-            if ffAfrEksOrdreType.Value = 2 then
-            begin
-              Syg := -Syg;
-              Kom := -Kom;
-              Pat := -Pat;
-              Antal := format('%3d', [-ffAfrLinAntal.Value]);
-            end
-            else
-              Antal := format('%3d', [ffAfrLinAntal.Value]);
-            TotalSyg := TotalSyg + Syg;
-            TotalKom := TotalKom + Kom;
-            TotalPat := TotalPat + Pat;
-
-            TilAmt := FormCurr2Str('#####0.00', Syg);
-            TilKom := FormCurr2Str('#####0.00', Kom);
-            Patient := FormCurr2Str('#####0.00', Pat);
-            VareNr := Trim(ffAfrLinSubVareNr.AsString);
-            VareNr := VareNr.PadRight(7);
-            VareNavn := copy(ffAfrLinTekst.AsString, 1, 20);
-            VareNavn := VareNavn.PadRight(20);
-            PatLst.add(Dato + LbNr + VareNr + VareNavn + Antal + TilAmt + TilKom + Patient);
-            ffAfrLin.Prior;
-          end;
-          // here we add the gebyr lines if any
-
-          if ffAfrEksUdbrGebyr.AsCurrency <> 0.0 then
-          begin
-            if ffAfrEksOrdreType.Value = 2 then
-              gebyr := 0 - ffAfrEksUdbrGebyr.AsCurrency
-            else
-              gebyr := ffAfrEksUdbrGebyr.AsCurrency;
-            TilAmt := FormCurr2Str('#####0.00', 0.0);
-            TilKom := FormCurr2Str('#####0.00', 0.0);
-            Patient := FormCurr2Str('#####0.00', gebyr);
-            TotalPat := TotalPat + gebyr;
-            VareNr := '      ';
-            VareNr := VareNr.PadRight(7);
-            VareNavn := 'Udbr.Gebyr';
-            VareNavn := VareNavn.PadRight(20);
-            PatLst.add(Dato + LbNr + VareNr + VareNavn + Antal + TilAmt + TilKom + Patient);
-
-          end;
-          if ffAfrEksEdbGebyr.AsCurrency <> 0.0 then
-          begin
-            if ffAfrEksOrdreType.Value = 2 then
-              gebyr := 0 - ffAfrEksEdbGebyr.AsCurrency
-            else
-              gebyr := ffAfrEksEdbGebyr.AsCurrency;
-            TilAmt := FormCurr2Str('#####0.00', 0.0);
-            TilKom := FormCurr2Str('#####0.00', 0.0);
-            Patient := FormCurr2Str('#####0.00', gebyr);
-            TotalPat := TotalPat + gebyr;
-            VareNr := '';
-            VareNr := VareNr.PadRight(7);
-            VareNavn := 'Edb-Gebyr';
-            VareNavn := VareNavn.PadRight(20);
-            PatLst.add(Dato + LbNr + VareNr + VareNavn + Antal + TilAmt + TilKom + Patient);
-
-          end;
-          if ffAfrEksTlfGebyr.AsCurrency <> 0.0 then
-          begin
-            if ffAfrEksOrdreType.Value = 2 then
-              gebyr := 0 - ffAfrEksTlfGebyr.AsCurrency
-            else
-              gebyr := ffAfrEksTlfGebyr.AsCurrency;
-            TilAmt := FormCurr2Str('#####0.00', 0.0);
-            TilKom := FormCurr2Str('#####0.00', 0.0);
-            Patient := FormCurr2Str('#####0.00', gebyr);
-            TotalPat := TotalPat + gebyr;
-            VareNr := '      ';
-            VareNr := VareNr.PadRight(7);
-            VareNavn := 'Tlf-Gebyr';
-            VareNavn := VareNavn.PadRight(20);
-            PatLst.add(Dato + LbNr + VareNr + VareNavn + Antal + TilAmt + TilKom + Patient);
-
-          end;
-        finally
-          ffAfrEks.Next;
-        end;
-      end;
-      PatLst.add(' ');
-      PatLst.add('I alt' + Spaces(40) + FormCurr2Str('#####0.00', TotalSyg) +
-        FormCurr2Str('#####0.00', TotalKom) + FormCurr2Str('#####0.00',
-        TotalPat));
-      PatLst.add(StringOfChar('=', 72));
-      PatLst.add('');
-      PatLst.add('');
-//      PatLst.add('Vejledende pris for udskrift kr. ' + Trim(Pris_ekspliste) +
-//        ' incl. moms pr. påbegyndt side dog max.');
-//      PatLst.add('kr. 200 incl. moms for hele listen.');
-      PatLst.add('');
-      PatLst.Insert(0, 'Dato    Løbenr Nr     Beskrivelse       Antal   Region  Kommune    Andel');
-      PatLst.Insert(0, 'Ekspeditionens Vare   og                       Tilskud  Tilskud  Patient');
-      PatLst.Insert(0, 'Udskrevet for ' + ffPatKarKundeNr.AsString + ' ' +
-        BytNavn(ffPatKarNavn.AsString) + ' ' + FormatDateTime('dd/mm/yyyy', FraDato) + ' - ' +
-        FormatDateTime('dd/mm/yyyy', TilDato));
-      PatLst.Insert(0, ffFirmaNavn.AsString);
-      PatLst.Insert(0, 'E K S P E D I T I O N S - L I S T E');
-      PatLst.SaveToFile('C:\C2\Temp\EkspListe.Txt');
-      PatMatrixPrnForm.PrintMatrix(PNr, 'C:\C2\Temp\EkspListe.Txt');
-    finally
-      PatLst.Free;
-      BusyMouseEnd;
+        CF3DetailedKundeList2(MainDm.nxdb, MainDm.ffPatKarKundeNr.AsString, FraDato, TilDato)
+      else
+        CF3KundeList2(MainDm.nxdb, MainDm.ffPatKarKundeNr.AsString, FraDato, TilDato);
+    except
+      on e: Exception do
+        ChkBoxOK(e.Message);
     end;
+
+  finally
+    BusyMouseEnd;
   end;
 
 end;
@@ -15252,209 +15006,20 @@ begin
 end;
 
 procedure TStamForm.acEfterRegExecute(Sender: TObject);
-var
-  save_index: string;
-  LbNr, linienr, Antal: Integer;
-
-  function get_antal_not_credited: Integer;
-  var
-    antalnotcredited: Integer;
-  begin
-    with MainDm do
-    begin
-      Result := 0;
-      antalnotcredited := ffLinOvrAntal.AsInteger;
-      nxEksCred.IndexName := 'LbnrOrden';
-
-      nxEksCred.SetRange([ffEksOvrLbNr.AsInteger, ffLinOvrLinieNr.AsInteger],
-        [ffEksOvrLbNr.AsInteger, ffLinOvrLinieNr.AsInteger]);
-      try
-        if nxEksCred.RecordCount = 0 then
-          exit;
-
-        nxEksCred.First;
-        while not nxEksCred.Eof do
-        begin
-
-          if nxEksCred.fieldbyname('DelvisAntal').AsInteger = 0 then
-          begin
-            antalnotcredited := 0;
-            break;
-          end;
-
-          antalnotcredited := antalnotcredited - nxEksCred.fieldbyname('DelvisAntal').AsInteger;
-          nxEksCred.Next;
-        end;
-
-      finally
-        nxEksCred.CancelRange;
-        Result := antalnotcredited;
-      end;
-    end;
-  end;
-
 begin
-  with MainDm do
-  begin
-    save_index := SaveAndAdjustIndexName(ffEksTil, 'NrOrden');
-    try
-      if StamPages.ActivePage <> EkspPage then
-        exit;
-      if ffEksOvrOrdreType.AsInteger = 2 then
-      begin
-        ChkBoxOK('Returekspedition kan ikke efterregistreres');
-        exit;
-      end;
+  if StamPages.ActivePage <> EkspPage then
+    exit;
 
-      if ffLinOvrLinieType.AsInteger = 2 then
-      begin
-        ChkBoxOK('Håndkøbslinie kan ikke sendes til CTR');
-        exit;
-      end;
-
-      if (ffEksOvrOrdreDato.AsDateTime <= (Now - 365)) then
-      begin
-        ChkBoxOK('Denne ekspedition kan ikke efterregistreres hos CTR,' + #10#13
-          + 'da den er mere end 1 år.');
-        exit;
-      end;
-
-      // ffeksovr always points to the same lbnr in fqeksovr. uses after scroll
-      if ffEksOvrUdlignNr.AsInteger <> 0 then
-      begin
-        ChkBoxOK('Ordinationen er allerede tilbageført!');
-        exit;
-      end;
-
-      Antal := get_antal_not_credited;
-      if Antal = 0 then
-      begin
-        ChkBoxOK('Ordinationen er allerede tilbageført!');
-        exit;
-      end;
-
-      // dont allow function for cannabis products
-
-      nxLager.IndexName := 'NrOrden';
-      if nxLager.FindKey([fflinovrLager.AsInteger, ffLinOvrSubVareNr.AsString])
-      then
-      begin
-        if copy(nxLagerDrugId.AsString, 1, 4) = CannabisPrefix then
-        begin
-          ChkBoxOK('Medicinsk Cannabis kan ikke efterregistreres til CTR A' +#13#10 +
-                    'Tjek Saldo i CTR B');
-          exit;
-        end;
-      end;
-
-      if not ffEksTil.FindKey([ffLinOvrLbNr.AsInteger, ffLinOvrLinieNr.AsInteger]) then
-      begin
-        ChkBoxOK('Something has gone wrong!');
-        exit;
-      end;
-
-      if ffEksTilRegelSyg.AsInteger <> 0 then
-      begin
-        ChkBoxOK('Ordinationen har allerede en ss regel');
-        exit;
-      end;
-      if not ffPatUpd.FindKey([ffEksOvrKundenr.AsString]) then
-      begin
-        ChkBoxOK('Kunde findes ikke ' + ffEksOvrKundenr.AsString);
-        exit;
-      end;
-
-      if ffPatUpdKundeType.AsInteger <> 1 then
-      begin
-        ChkBoxOK('Kun ekspedition til enkeltperson kan sendes til CTR');
-        exit;
-      end;
-
-      // look for patienttilskud regel > 59
-
-      ffTilUpd.SetRange([ffEksOvrKundenr.AsString], [ffEksOvrKundenr.AsString]);
-      try
-        if ffTilUpd.RecordCount <> 0 then
-        begin
-          ffTilUpd.First;
-          while not ffTilUpd.Eof do
-          begin
-            if ffTilUpdRegel.AsInteger > 59 then
-            begin
-              ChkBoxOK('Kunden har kommunal bevilling, så denne funktion kan ikke benyttes.');
-              exit;
-            end;
-
-            ffTilUpd.Next;
-          end;
-        end;
-
-      finally
-        ffTilUpd.CancelRange;
-      end;
-
-      if ffPatUpdCtrType.AsInteger = 99 then
-      begin
-
-        if not ChkBoxYesNo
-          ('Er du sikker på, at du vil indberette terminalbevilling for ' +
-          slinebreak + 'Lbnr. ' + ffEksOvrLbNr.AsString + ' ' +
-          ffLinOvrTekst.AsString, False) then
-          exit;
-      end
-      else
-      begin
-        if not ChkBoxYesNo
-          ('Er du sikker på, at du vil indberette regel 42 til ctr for ' +
-          slinebreak + 'Lbnr. ' + ffEksOvrLbNr.AsString + ' ' +
-          ffLinOvrTekst.AsString, False) then
-          exit;
-      end;
-
-      LbNr := ffLinOvrLbNr.AsInteger;
-      linienr := ffLinOvrLinieNr.AsInteger;
-      AfslutForm.GemRegel42Retrunering(LbNr, linienr, Antal);
-      if not ffEksTil.FindKey([LbNr, linienr]) then
-      begin
-        ChkBoxOK('Fejl i ret Tilskud ny Tilskud findes ikke');
-        exit;
-      end;
-      if not ffEksLin.FindKey([LbNr, linienr]) then
-      begin
-        ChkBoxOK('Fejl i ret Tilskud ny LinierSalg findes ikke');
-        exit;
-      end;
-      if not ffEksKar.FindKey([LbNr]) then
-      begin
-        ChkBoxOK('Fejl i ret Tilskud ny Ekspeditioner findes ikke');
-        exit;
-      end;
-
-      try
-        ffEksTil.Edit;
-        ffEksTilRegelSyg.AsInteger := 42;
-        if ffPatUpdCtrType.AsInteger = 99 then
-          ffEksTilRegelSyg.AsInteger := 41;
-        ffEksTilBGPBel.AsCurrency := ffEksLinAntal.AsInteger *
-          ffEksTilBGP.AsCurrency;
-        if ffPatUpdCtrType.AsInteger = 99 then
-          ffEksTilBGPBel.AsCurrency := ffEksLinAntal.AsInteger *
-            ffLinOvrPris.AsCurrency;
-        ffEksTil.Post;
-        ffCtrOpd.Insert;
-        ffCtrOpdNr.AsInteger := LbNr;
-        ffCtrOpdDato.AsDateTime := ffEksKarOrdreDato.AsDateTime;
-        ffCtrOpd.Post;
-      except
-        on e: Exception do
-        begin
-          ChkBoxOK('Fejl i ret Tilskud ' + e.Message);
-          ffEksTil.Cancel;
-        end;
-      end;
-    finally
-      ffEksTil.IndexName := save_index;
-    end;
+  var LSaveIndex := saveandadjustIndexName(maindm.ffeksovr,'NrOrden');
+  try
+//    if not MainDm.ffEksOvr.FindKey([MainDm.fqEksOvrLbnr.AsInteger]) then
+//    begin
+//      ChkBoxOK('Ekspedition ' + MainDm.fqEksOvrLbnr.AsString + ' findes ikke');
+//      Exit;
+//    end;
+    CF3EfterReg;
+  finally
+    AdjustIndexName(MainDm.ffEksOvr,LSaveIndex);
   end;
 end;
 

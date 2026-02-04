@@ -8,14 +8,14 @@ object frmCTRUdskriv: TfrmCTRUdskriv
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
-  Font.Height = -11
-  Font.Name = 'Tahoma'
+  Font.Height = -15
+  Font.Name = 'Segoe UI'
   Font.Style = []
-  OldCreateOrder = False
+  OldCreateOrder = True
   Position = poScreenCenter
   OnShow = FormShow
   PixelsPerInch = 96
-  TextHeight = 13
+  TextHeight = 20
   object rgCTRServer: TRadioGroup
     Left = 0
     Top = 0
@@ -47,26 +47,38 @@ object frmCTRUdskriv: TfrmCTRUdskriv
     Height = 40
     Align = alClient
     TabOrder = 2
-    object BitBtn1: TBitBtn
-      Left = 16
+    object BitBtn2: TcxButton
+      Left = 255
       Top = 6
-      Width = 75
-      Height = 25
-      Caption = '&OK'
-      Kind = bkOK
-      NumGlyphs = 2
+      Width = 100
+      Height = 30
+      Cancel = True
+      Caption = '&Fortryd'
+      ModalResult = 2
       TabOrder = 0
-      OnClick = BitBtn1Click
     end
-    object BitBtn2: TBitBtn
-      Left = 280
+    object BitBtn1: TcxButton
+      Left = 149
       Top = 6
-      Width = 75
-      Height = 25
-      Caption = 'Fortryd'
-      Kind = bkCancel
-      NumGlyphs = 2
+      Width = 100
+      Height = 30
+      Caption = '&Gem'
+      ModalResult = 1
       TabOrder = 1
+      OnClick = BitBtn1_Click
     end
+  end
+  object SQLConnection1: TSQLConnection
+    DriverName = 'DataSnap'
+    LoginPrompt = False
+    Params.Strings = (
+      'DriverUnit=Data.DbxDatasnap'
+      'HostName=localhost'
+      'Port=21167'
+      'CommunicationProtocol=tcp/ip'
+      'DatasnapContext=datasnap/')
+    Left = 304
+    Top = 24
+    UniqueId = '{3E8FCCC7-3EBB-4A54-A05E-D3BCDB6ACB80}'
   end
 end
